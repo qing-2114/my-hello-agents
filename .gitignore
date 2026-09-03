@@ -1,0 +1,6 @@
+# Local secrets
+1.3-experiment/.env
+
+# Python generated files
+__pycache__/
+*.py[cod]

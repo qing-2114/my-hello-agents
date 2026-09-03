@@ -1,0 +1,2 @@
+{"id":"m001","user_id":"demo-user","type":"preference","key":"活动类型","value":"不喜欢室内活动，例如博物馆；旅行推荐优先考虑户外活动。","keywords":["室内活动","室内","博物馆","户外活动","景点"],"source":"explicit_user","confidence":0.99,"status":"active","created_at":"2026-09-03T20:00:00+08:00"}
+{"id":"m002","user_id":"demo-user","type":"preference","key":"饮食","value":"不喜欢西湖醋鱼；推荐杭州美食时应避开西湖醋鱼。","keywords":["西湖醋鱼","醋鱼","饮食","美食"],"source":"explicit_user","confidence":0.99,"status":"active","created_at":"2026-09-03T20:00:00+08:00"}

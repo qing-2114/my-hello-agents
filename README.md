@@ -1,0 +1,152 @@
+# my-hello-agent
+
+## 文件职责
+
+- `1.3-experiment/prompts/travel_agent.md`: 智能体的系统提示词，只保存提示词文本。
+- `1.3-experiment/agent.py`: 读取系统提示词、构造发送给 LLM 的 `messages`，并提供工具分发函数。
+- `1.3-experiment/tools.py`: 天气、景点搜索，以及可复现的本地模拟查票、备选和购票工具。
+- `1.3-experiment/llm_client.py`: DeepSeek 的 OpenAI 兼容客户端封装。
+- `1.3-experiment/memory_store.py`: V0 记忆读取、按用户隔离和关键词检索。
+- `1.3-experiment/session_agent.py`: 多轮会话状态、显式接受/拒绝反馈，以及连续拒绝 3 次后的策略反思。
+- `1.3-experiment/data/memories.jsonl`: 手工写入的用户偏好记忆（JSONL，一行一条记录）。
+- `1.3-experiment/test_memory_v0.py`: 3 个离线记忆读取用例。
+
+## 运行检查
+
+```powershell
+python .\1.3-experiment\agent.py
+```
+
+工具分发示例：
+
+```python
+from tools import available_tools
+
+result = available_tools["get_weather"]("杭州")
+# 或使用 agent.invoke_tool("get_weather", city="杭州")
+```
+
+安装依赖：
+
+```powershell
+python -m pip install requests tavily-python
+```
+
+景点工具调用前需要在 `1.3-experiment/.env` 中配置 `TAVILY_API_KEY`；LLM 配置项为 `DEEPSEEK_API_KEY`、`DEEPSEEK_BASE_URL` 和 `DEEPSEEK_MODEL`。该文件已加入 `.gitignore`，不会被 Git 纳入版本控制。
+
+启动完整的 LLM + 工具主循环：
+
+```powershell
+python .\1.3-experiment\agent.py
+```
+
+主循环会读取模型的 `Action`，执行 `available_tools` 中对应的函数，并把工具结果反馈给模型，直到模型返回 `Finish[...]`。
+
+## V0 记忆功能
+
+当前示例为 `demo-user` 手工保存了两条偏好：不喜欢室内活动（如博物馆），以及不喜欢西湖醋鱼。每次用户请求开始时，程序先按关键词检索相关记忆，再将 Top-K 结果作为“仅供参考的上下文”追加到系统提示词；记忆不会写入 `prompt_history`，也不能单独授权工具调用。
+
+运行 3 个离线用例：
+
+```powershell
+python -m unittest discover -s .\\1.3-experiment -p "test_memory_v0.py" -v
+```
+
+真正调用模型时，将 `build_messages(user_input)` 的返回值传给你的 SDK。例如：
+
+```python
+response = client.chat.completions.create(
+    model="MODEL_NAME",
+    messages=build_messages(user_input),
+)
+```
+
+不同 SDK 的参数名可能不同，但系统提示词的位置都是 `role="system"`。
+
+## 多轮拒绝与策略调整
+
+`max_steps=5` 只限制单次用户请求内部的 Thought/Action 和工具调用循环。用户在智能体返回结果之后发起的新请求属于新的用户回合，应继续使用相同的 `SessionState`，并重新获得最多 5 个内部步骤。
+
+```python
+from session_agent import SessionState, continue_session
+
+session = SessionState(session_id="web-session-001", user_id="demo-user")
+
+result = continue_session(session, "推荐一个杭州周末景点")
+result = continue_session(session, "人太多了，换一个", feedback_type="reject")
+result = continue_session(session, "我不喜欢商业街", feedback_type="reject")
+result = continue_session(session, "也不想去室内", feedback_type="reject")
+
+print(result.reflected)         # True
+print(result.strategy_version)  # 1
+print(result.answer)            # 已应用新策略的下一次推荐
+```
+
+直接运行可连续交互的命令行版本：
+
+```powershell
+python .\1.3-experiment\session_agent.py
+```
+
+每次模型返回 `Finish[...]` 后，程序仍会等待下一条输入。普通文字会经过一次反馈分类，自动判断为接受、拒绝或普通消息；使用 `/reject 拒绝原因` 和 `/accept` 可以在调试时明确覆盖分类结果，使用 `/exit` 结束整个会话。例如：
+
+```text
+你：推荐一个杭州景点
+智能体：……
+你：人太多了，换一个
+智能体：……
+你：我不喜欢商业街
+智能体：……
+你：这个也不合适，我想去安静的户外地点
+[已根据连续 3 次拒绝调整推荐策略]
+智能体：……
+```
+
+自然语言反馈分类最多增加一次独立的 LLM 调用，不占用 `max_steps_per_turn=5`；这 5 步仍只约束生成当前答案时的 Thought/Action 和工具调用循环。
+
+记忆检索会使用本轮输入和同一会话最近的用户输入。因此第一轮检索到的偏好不会因为后续用户只说“不要”而立即消失；例如“不喜欢博物馆”会继续作为系统上下文约束后续推荐。反思同时读取这些长期偏好，而且不能把没有具体原因的景点拒绝扩大成对整个活动类别的拒绝。触发三次拒绝时，命令行先显示 `[已根据连续 3 次拒绝调整推荐策略]` 和新策略摘要，再使用该策略执行本轮 Agent Loop。
+
+## 模拟票务与售罄备选
+
+票务实验使用 `tools.py` 中的本地固定库存，不连接真实票务平台，也不会产生真实交易。当前杭州模拟数据中，灵隐寺和雷峰塔余票为 0；西溪国家湿地公园、杭州宋城和千岛湖中心湖区有票。重启程序后库存恢复，离线测试可调用 `reset_mock_ticket_inventory()` 主动复位。
+
+Agent 在推荐需要购票的景点前先调用 `check_ticket_availability`。用户明确确认景点、日期和数量后才能调用 `book_ticket`。如果返回 `SOLD_OUT`，Agent 在同一轮调用 `find_ticket_alternatives` 并向用户展示备选；用户需要再次确认后，下一轮才会购买备选景点。
+
+可直接验证工具：
+
+```python
+from tools import check_ticket_availability, find_ticket_alternatives
+
+print(check_ticket_availability("杭州", "灵隐寺", "2026-09-10", 1))
+print(find_ticket_alternatives("杭州", "2026-09-10", 1, ["灵隐寺"]))
+```
+
+接入 HTTP 服务时，服务端应通过 `session_id` 读取并保存 `SessionState`。请求体应显式包含 `feedback_type`（`none`、`accept` 或 `reject`），不要让模型决定是否计为拒绝。生产环境可把状态放入 Redis 或数据库；此示例保留为可注入、可测试的内存对象。
+
+推荐沿用同一个“继续会话”接口，例如：
+
+```http
+POST /sessions/web-session-001/turns
+Content-Type: application/json
+
+{
+  "message": "人太多了，换一个安静的",
+  "feedback_type": "reject"
+}
+```
+
+服务端把返回值映射为 `answer`、`reflected`、`consecutive_rejections` 和 `strategy_version`。正式对外提供接口时还应给每条推荐生成 `recommendation_id`，反馈请求携带该 ID，并用它做幂等校验，防止网络重试被重复计为两次拒绝。
+
+建议分别设置以下边界：
+
+- `max_steps_per_turn=5`：限制一次用户回合中的 LLM/工具循环，现有值可以保留。
+- 每个用户回合最多反思 1 次：第三次拒绝只生成一次新策略，再用它产生下一条回复。
+- 按 token 预算截断或摘要会话历史；示例暂时只注入最近 12 条消息。
+- 给服务层设置会话 TTL 和请求频率限制。不要用总回合数 5 来提前结束正常对话。
+- 如果调整策略后又连续拒绝 3 次，优先询问预算、距离、时间、同行人和活动类型等缺失约束，再生成下一批推荐。
+
+运行全部离线测试：
+
+```powershell
+python -m unittest discover -s .\1.3-experiment -p "test_*.py" -v
+```
