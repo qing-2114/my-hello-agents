@@ -1,6 +1,10 @@
 # Local secrets
 1.3-experiment/.env
+4-experiment/.env
 
 # Python generated files
 __pycache__/
 *.py[cod]
+
+# Project-local Conda environment (large, generated files)
+.conda/

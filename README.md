@@ -29,7 +29,15 @@ result = available_tools["get_weather"]("杭州")
 安装依赖：
 
 ```powershell
-python -m pip install requests tavily-python
+conda activate F:\my-hello-agent\.conda
+python -m pip install -r F:\my-hello-agent\requirements.txt
+```
+
+本项目使用项目内的 Conda 隔离环境 `F:\my-hello-agent\.conda`，Python 3.12，
+并包含适配 NVIDIA GPU 的 PyTorch、Transformers。验证 GPU：
+
+```powershell
+conda run --prefix F:\my-hello-agent\.conda python -c "import torch, transformers; print(torch.__version__); print(transformers.__version__); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ```
 
 景点工具调用前需要在 `1.3-experiment/.env` 中配置 `TAVILY_API_KEY`；LLM 配置项为 `DEEPSEEK_API_KEY`、`DEEPSEEK_BASE_URL` 和 `DEEPSEEK_MODEL`。该文件已加入 `.gitignore`，不会被 Git 纳入版本控制。
@@ -62,6 +70,12 @@ response = client.chat.completions.create(
 ```
 
 不同 SDK 的参数名可能不同，但系统提示词的位置都是 `role="system"`。
+
+## 实验 3-2：本地调用 Qwen1.5-0.5B-Chat
+
+实验代码位于 `3.2-experiment/qwen_chat.py`，说明和运行命令见
+`3.2-experiment/README.md`。它使用 Transformers 加载
+`Qwen/Qwen1.5-0.5B-Chat`，默认采用教程中的贪心解码，也可以用 `--sample` 比较采样参数的影响。
 
 ## 多轮拒绝与策略调整
 
