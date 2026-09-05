@@ -77,6 +77,19 @@ response = client.chat.completions.create(
 `3.2-experiment/README.md`。它使用 Transformers 加载
 `Qwen/Qwen1.5-0.5B-Chat`，默认采用教程中的贪心解码，也可以用 `--sample` 比较采样参数的影响。
 
+## 第四章：ReAct 工具调用循环
+
+`4-experiment/ReAct/agent.py` 已实现一个可交互的 ReAct Agent：模型按
+`Thought` / `Action` 格式输出，Action 可调用注册工具或返回 `Finish[最终答案]`；
+工具 Observation 会回灌到下一步上下文。当前搜索工具通过 SerpApi 提供网页摘要，
+只有实际运行交互程序时才会使用配置好的 API。
+
+离线单元测试不访问外部服务，可验证解析、工具回灌、格式错误恢复和最大步数限制：
+
+```powershell
+F:\my-hello-agent\.conda\python.exe -m unittest discover -s .\4-experiment\ReAct -p "test_*.py" -v
+```
+
 ## 多轮拒绝与策略调整
 
 `max_steps=5` 只限制单次用户请求内部的 Thought/Action 和工具调用循环。用户在智能体返回结果之后发起的新请求属于新的用户回合，应继续使用相同的 `SessionState`，并重新获得最多 5 个内部步骤。
