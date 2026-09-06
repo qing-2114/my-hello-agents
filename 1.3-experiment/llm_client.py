@@ -9,7 +9,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 
-load_dotenv(Path(__file__).resolve().parent / ".env")
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(PROJECT_DIR / ".env")
 
 
 class OpenAICompatibleClient:
@@ -17,7 +18,7 @@ class OpenAICompatibleClient:
 
     def __init__(self, model: str, api_key: str, base_url: str):
         if not api_key:
-            raise ValueError("未配置 LLM API Key。请检查 1.3-experiment/.env。")
+            raise ValueError("未配置 LLM API Key。请检查项目根目录的 .env。")
         self.model = model
         self.client = OpenAI(api_key=api_key, base_url=base_url)
 
@@ -42,11 +43,11 @@ class OpenAICompatibleClient:
 
 
 def create_deepseek_client() -> OpenAICompatibleClient:
-    """Create a client from the local .env configuration."""
+    """Create a client from the project-wide .env configuration."""
     return OpenAICompatibleClient(
-        model=os.getenv("DEEPSEEK_MODEL", "flash"),
-        api_key=os.getenv("DEEPSEEK_API_KEY", ""),
-        base_url=os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com"),
+        model=os.getenv("LLM_MODEL_ID", "flash"),
+        api_key=os.getenv("LLM_API_KEY", ""),
+        base_url=os.getenv("LLM_BASE_URL", "https://api.deepseek.com"),
     )
 
 

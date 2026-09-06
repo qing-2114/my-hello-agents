@@ -17,9 +17,8 @@ from dotenv import load_dotenv
 from tavily import TavilyClient
 
 
-# Resolve the .env next to this file, so loading works regardless of the
-# directory from which the main loop is started.
-load_dotenv(Path(__file__).resolve().parent / ".env")
+# Load the single project-wide .env regardless of the current working directory.
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 
 # Deterministic local inventory for the ticketing experiment.  These are mock

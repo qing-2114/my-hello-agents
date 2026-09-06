@@ -1,0 +1,275 @@
+:root {
+  --bg: #ffffff;
+  --bg-card: #f1f5f9;
+  --text: #0f172a;
+  --text-muted: #475569;
+  --accent: #f7931a;
+  --accent-text: #1a1103;
+  --error-text: #b91c1c;
+  --error-bg: #fee2e2;
+  --border: #cbd5e1;
+  --success: #166534;
+  --skeleton: #cbd5e1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --bg-card: #1e293b;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --accent: #fbbf24;
+    --accent-text: #1a1103;
+    --error-text: #fecaca;
+    --error-bg: #7f1d1d;
+    --border: #334155;
+    --success: #86efac;
+    --skeleton: #334155;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.shell {
+  width: 100%;
+  max-width: 640px;
+  padding: 1.25rem 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.brand {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--accent);
+  border-radius: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  margin: 0.1rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem 1.25rem;
+  width: 100%;
+  text-align: center;
+}
+
+.price {
+  font-size: clamp(2rem, 8vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  min-height: 1.2em;
+  word-break: break-word;
+}
+
+.price.is-stale {
+  color: var(--text-muted);
+}
+
+.price.is-fresh {
+  color: var(--text);
+}
+
+.currency {
+  font-size: 0.6em;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem 0.875rem;
+  margin-top: 0.75rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.badge::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.badge-loading {
+  color: var(--text-muted);
+}
+
+.badge-loading::before {
+  background: var(--text-muted);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.badge-success {
+  color: var(--success);
+  border-color: currentColor;
+}
+
+.badge-error {
+  color: var(--error-text);
+  border-color: currentColor;
+}
+
+.updated {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.error {
+  margin: 0.9rem 0 0;
+  color: var(--error-text);
+  background: var(--error-bg);
+  border: 1px solid currentColor;
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.error[hidden] {
+  display: none;
+}
+
+.actions {
+  width: 100%;
+  text-align: center;
+}
+
+.btn {
+  min-height: 48px;
+  min-width: 160px;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--accent);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Skeleton loading */
+.skeleton {
+  display: inline-block;
+  background: linear-gradient(
+    90deg,
+    var(--skeleton) 25%,
+    rgba(255, 255, 255, 0.35) 50%,
+    var(--skeleton) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+  border-radius: 8px;
+}
+
+.skeleton-lg {
+  width: 13rem;
+  height: 2.4rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* Motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .badge-loading::before,
+  .skeleton {
+    animation: none;
+  }
+}

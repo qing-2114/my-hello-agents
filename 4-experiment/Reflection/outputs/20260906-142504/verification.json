@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "checks": [
+    "n=0..1000 against trial division",
+    "n=10000 against trial division",
+    "negative input raises ValueError",
+    "n=1000000 against independent full sieve"
+  ],
+  "example_n_30": [
+    2,
+    3,
+    5,
+    7,
+    11,
+    13,
+    17,
+    19,
+    23,
+    29
+  ],
+  "prime_count_up_to_1000000": 78498,
+  "last_prime_up_to_1000000": 999983,
+  "api_response_count": 7,
+  "stop_reason": "max_iterations",
+  "note": "No runtime performance benchmark or proof of optimality."
+}

@@ -1,5 +1,10 @@
 # my-hello-agent
 
+## 统一环境变量配置
+
+全项目只读取根目录的 `.env`。首次使用时直接在项目根目录创建 `.env`，
+再按需填写 LLM、Tavily 和 SerpApi 配置；真实 `.env` 已被 Git 忽略。
+
 ## 文件职责
 
 - `1.3-experiment/prompts/travel_agent.md`: 智能体的系统提示词，只保存提示词文本。
@@ -40,7 +45,8 @@ python -m pip install -r F:\my-hello-agent\requirements.txt
 conda run --prefix F:\my-hello-agent\.conda python -c "import torch, transformers; print(torch.__version__); print(transformers.__version__); print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU')"
 ```
 
-景点工具调用前需要在 `1.3-experiment/.env` 中配置 `TAVILY_API_KEY`；LLM 配置项为 `DEEPSEEK_API_KEY`、`DEEPSEEK_BASE_URL` 和 `DEEPSEEK_MODEL`。该文件已加入 `.gitignore`，不会被 Git 纳入版本控制。
+景点工具调用前需要在根目录 `.env` 中配置 `TAVILY_API_KEY`；LLM 配置项为
+`LLM_API_KEY`、`LLM_BASE_URL` 和 `LLM_MODEL_ID`。
 
 启动完整的 LLM + 工具主循环：
 
@@ -177,3 +183,10 @@ Content-Type: application/json
 ```powershell
 python -m unittest discover -s .\1.3-experiment -p "test_*.py" -v
 ```
+
+## 第六章：CAMEL 双智能体电子书协作
+
+`6-experiment/CAMEL` 使用 CAMEL `RolePlaying`，让 AI 作家逐章发出
+`Instruction / Input`，AI 心理学家以 `Solution / Next request` 交付内容，
+协作生成 8000–10000 字科普电子书《拖延症心理学》。运行方法、模型配置、
+终端输出格式和生成文件说明见 `6-experiment/CAMEL/README.md`。

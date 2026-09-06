@@ -7,7 +7,7 @@ from serpapi import SerpApiClient
 
 
 PROJECT_DIR = Path(__file__).resolve().parents[2]
-load_dotenv(PROJECT_DIR / "1.3-experiment" / ".env")
+load_dotenv(PROJECT_DIR / ".env")
 
 
 class ToolExecutor:
@@ -54,7 +54,7 @@ def search(query: str) -> str:
     try:
         api_key = os.getenv("SERPAPI_API_KEY")
         if not api_key:
-            return "错误:SERPAPI_API_KEY 未在 .env 文件中配置。"
+            return "错误:SERPAPI_API_KEY 未在项目根目录的 .env 中配置。"
 
         params = {
             "engine": "google",

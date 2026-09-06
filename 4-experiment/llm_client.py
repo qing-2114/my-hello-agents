@@ -1,7 +1,6 @@
 """第四章：基础的 OpenAI 兼容 LLM 客户端。
 
-配置优先从 ``4-experiment/.env`` 读取通用的 ``LLM_*`` 变量；为了复用
-实验 1-3 的配置，也兼容 ``1.3-experiment/.env`` 中的 ``DEEPSEEK_*`` 变量。
+配置统一从项目根目录的 ``.env`` 读取通用的 ``LLM_*`` 变量。
 项目来源：<https://hello-agents.datawhale.cc/>。
 """
 
@@ -15,12 +14,8 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 
-EXPERIMENT_DIR = Path(__file__).resolve().parent
-PROJECT_DIR = EXPERIMENT_DIR.parent
-
-# 先加载实验 1-3 的配置，再允许第四章自己的 .env 覆盖它。
-load_dotenv(PROJECT_DIR / "1.3-experiment" / ".env")
-load_dotenv(EXPERIMENT_DIR / ".env", override=True)
+PROJECT_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(PROJECT_DIR / ".env")
 
 
 def _env(*names: str, default: Optional[str] = None) -> Optional[str]:
@@ -43,11 +38,9 @@ class HelloAgentsLLM:
         timeout: Optional[int] = None,
     ) -> None:
         """初始化客户端；显式参数优先于 ``.env`` 配置。"""
-        self.model = model or _env("LLM_MODEL_ID", "DEEPSEEK_MODEL")
-        apiKey = apiKey or _env("LLM_API_KEY", "DEEPSEEK_API_KEY")
-        baseUrl = baseUrl or _env(
-            "LLM_BASE_URL", "DEEPSEEK_BASE_URL", default="https://api.deepseek.com"
-        )
+        self.model = model or _env("LLM_MODEL_ID")
+        apiKey = apiKey or _env("LLM_API_KEY")
+        baseUrl = baseUrl or _env("LLM_BASE_URL", default="https://api.deepseek.com")
 
         timeout_value = timeout
         if timeout_value is None:
@@ -56,8 +49,7 @@ class HelloAgentsLLM:
         if not all([self.model, apiKey, baseUrl]):
             raise ValueError(
                 "模型 ID、API 密钥和服务地址必须通过参数或 .env 文件提供。"
-                "支持 LLM_MODEL_ID/LLM_API_KEY/LLM_BASE_URL，"
-                "也兼容 DEEPSEEK_MODEL/DEEPSEEK_API_KEY/DEEPSEEK_BASE_URL。"
+                "请在项目根目录配置 LLM_MODEL_ID/LLM_API_KEY/LLM_BASE_URL。"
             )
 
         self.client = OpenAI(api_key=apiKey, base_url=baseUrl, timeout=timeout_value)

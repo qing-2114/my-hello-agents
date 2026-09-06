@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Real-time Bitcoin price in US dollars." />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Bitcoin Price · BTC/USD</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <header class="app-header">
+      <div class="brand" aria-hidden="true">₿</div>
+      <div>
+        <h1 class="title">Bitcoin Price</h1>
+        <p class="subtitle">BTC / USD · CoinGecko</p>
+      </div>
+    </header>
+
+    <section class="card price-card" aria-labelledby="price-heading">
+      <h2 id="price-heading" class="visually-hidden">Current price</h2>
+
+      <div id="price" class="price" role="status" aria-live="polite" aria-atomic="true">
+        <span class="skeleton skeleton-lg"></span>
+      </div>
+
+      <div class="meta">
+        <span id="state-badge" class="badge badge-loading" role="status">Loading…</span>
+        <span id="last-updated" class="updated" role="status">Last update: --:--:--</span>
+      </div>
+
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+
+    <div class="actions">
+      <button id="refresh" class="btn" type="button" disabled>
+        Refresh now
+      </button>
+    </div>
+
+    <noscript>
+      <p class="error" role="alert">JavaScript is required to display the live Bitcoin price.</p>
+    </noscript>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
