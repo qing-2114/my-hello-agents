@@ -2,6 +2,10 @@ requests>=2.31
 tavily-python>=0.5
 python-dotenv>=1.0
 openai>=1.0
+hello-agents==0.1.1
+langgraph>=0.2
+langchain-core>=0.3
+langchain-openai>=0.3
 # PyTorch CUDA 12.8 wheels for the project's RTX 4050 setup.
 --extra-index-url https://download.pytorch.org/whl/cu128
 torch==2.11.0+cu128

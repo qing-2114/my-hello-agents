@@ -184,9 +184,37 @@ Content-Type: application/json
 python -m unittest discover -s .\1.3-experiment -p "test_*.py" -v
 ```
 
-## 第六章：CAMEL 双智能体电子书协作
+## 第六章：多智能体框架与 LangGraph
 
-`6-experiment/CAMEL` 使用 CAMEL `RolePlaying`，让 AI 作家逐章发出
-`Instruction / Input`，AI 心理学家以 `Solution / Next request` 交付内容，
-协作生成 8000–10000 字科普电子书《拖延症心理学》。运行方法、模型配置、
-终端输出格式和生成文件说明见 `6-experiment/CAMEL/README.md`。
+`6-experiment/` 已包含 AgentScope、AutoGen、CAMEL 和 LangGraph 四组实验：
+
+- `AgentScope/`：由模型角色与 Python 规则控制器共同推进三国狼人杀对局；
+- `AutoGen/`：产品、开发、审查与用户代理协作生成并验收应用；
+- `CAMEL/`：AI 作家与 AI 心理学家通过 `RolePlaying` 协作生成科普电子书；
+- `LangGraph/`：使用 `SearchState` 和 `StateGraph` 串联
+  `understand -> search -> answer`，支持 Tavily 搜索失败时回退到 LLM 知识回答。
+
+运行 LangGraph 离线测试：
+
+```powershell
+F:\my-hello-agent\.conda\python.exe -m unittest .\6-experiment\LangGraph\test_graph.py -v
+```
+
+运行真实 LLM 与 Tavily 搜索链路：
+
+```powershell
+F:\my-hello-agent\.conda\python.exe .\6-experiment\LangGraph\graph.py "LangGraph 的 StateGraph 如何传递状态？"
+```
+
+## 第七章：框架扩展与智能体评估
+
+第七章实验位于 `7-experiment/`，当前包含四组可运行扩展：
+
+- `MyLLM`：在不修改 `hello-agents` 源码的前提下扩展 ModelScope Provider；
+- `MySimpleAgent`：增加文本工具调用、多轮 Observation 回灌和流式响应；
+- `MyReActAgent`：增强 Thought/Action 解析、格式错误自纠和基于 Observation 的防幻觉约束；
+- `MyReflectionAgent`：实现适用于写作、总结、方案等文本任务的
+  “初始回答 -> 反思 -> 改进”循环。
+
+各 Demo、离线测试和真实 API 运行命令见 `7-experiment/README.md`。项目统一从根目录
+`.env` 读取 `LLM_API_KEY`、`LLM_BASE_URL` 和 `LLM_MODEL_ID`，不在源码或日志中保存密钥。

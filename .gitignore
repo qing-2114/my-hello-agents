@@ -8,3 +8,6 @@ __pycache__/
 
 # Project-local Conda environment (large, generated files)
 .conda/
+
+# Accidental Windows cache path created by an unexpanded environment variable
+%SystemDrive%/
