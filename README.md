@@ -208,13 +208,20 @@ F:\my-hello-agent\.conda\python.exe .\6-experiment\LangGraph\graph.py "LangGraph
 
 ## 第七章：框架扩展与智能体评估
 
-第七章实验位于 `7-experiment/`，当前包含四组可运行扩展：
+第七章实验位于 `7-experiment/`，当前包含九组可运行扩展：
 
 - `MyLLM`：在不修改 `hello-agents` 源码的前提下扩展 ModelScope Provider；
 - `MySimpleAgent`：增加文本工具调用、多轮 Observation 回灌和流式响应；
 - `MyReActAgent`：增强 Thought/Action 解析、格式错误自纠和基于 Observation 的防幻觉约束；
 - `MyReflectionAgent`：实现适用于写作、总结、方案等文本任务的
-  “初始回答 -> 反思 -> 改进”循环。
+  “初始回答 -> 反思 -> 改进”循环；
+- `MyPlanAndSolveAgent`：改进第四章的 Plan-and-Solve，优化规划与执行提示词，
+  计划解析更健壮，并在规划失败时自纠重试、必要时退回单步直接作答；
+- `my_calculator`：用 `ToolRegistry.register_function` 注册的自定义计算器工具，
+  通过 AST 安全求值支持四则运算、`sqrt` 和 `pi`；
+- `advanced_search`：自定义高级搜索工具，优先 Tavily、失败时回退 SerpApi；
+- `ToolChain`：把多个已注册工具按顺序串起来，用模板把上一步输出传给下一步；
+- `AsyncToolExecutor`：用线程池 + `asyncio.gather` 并行执行多个工具。
 
 各 Demo、离线测试和真实 API 运行命令见 `7-experiment/README.md`。项目统一从根目录
 `.env` 读取 `LLM_API_KEY`、`LLM_BASE_URL` 和 `LLM_MODEL_ID`，不在源码或日志中保存密钥。
