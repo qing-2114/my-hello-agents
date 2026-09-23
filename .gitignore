@@ -11,3 +11,12 @@ __pycache__/
 
 # Accidental Windows cache path created by an unexpanded environment variable
 %SystemDrive%/
+
+# Chapter 8 local memory artifacts
+8-experiment/memory_data/
+8-experiment/reports/
+
+# Chapter 9 local memory artifacts
+9-experiment/memory_data/
+9-experiment/notes/
+9-experiment/reports/

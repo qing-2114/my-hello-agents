@@ -2,10 +2,14 @@ requests>=2.31
 tavily-python>=0.5
 python-dotenv>=1.0
 openai>=1.0
-hello-agents==0.1.1
+# 第八章 RAG / Memory 需要 0.2.x；0.2.0 遇到模型不可用时可切 0.2.8/0.2.9（见 8-experiment/README.md）
+hello-agents==0.2.8
 langgraph>=0.2
 langchain-core>=0.3
 langchain-openai>=0.3
+gradio>=6.0
+# PDF 解析：MarkItDown 的 pdf 扩展依赖（pdfminer.six + pdfplumber）
+pdfplumber>=0.11
 # PyTorch CUDA 12.8 wheels for the project's RTX 4050 setup.
 --extra-index-url https://download.pytorch.org/whl/cu128
 torch==2.11.0+cu128

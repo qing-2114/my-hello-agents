@@ -1,5 +1,16 @@
 # my-hello-agent
 
+## 项目状态
+
+教程跟踪阶段已完成到第九章，实验覆盖 `1.3` / `3.2` / `4` / `6` / `7` / `8` / `9`，
+其中第八章（记忆与检索）与第九章（上下文工程）均已通过真实 API 实测验证。
+
+**自 2026-09-24 起暂停按 hello-agents 教程逐章推进。** 后续不再按章节组织，
+改为围绕工程化能力推进：把已有 Agent 做成可上线的服务，补齐可观测性、自动化评测与部署，
+再做纵深专题和作品集。计划见 [ROADMAP.md](ROADMAP.md)。
+
+各实验目录仍保留教程章节编号与来源说明，便于回溯；README 不再预留尚未开工的章节小节。
+
 ## 统一环境变量配置
 
 全项目只读取根目录的 `.env`。首次使用时直接在项目根目录创建 `.env`，
@@ -225,3 +236,51 @@ F:\my-hello-agent\.conda\python.exe .\6-experiment\LangGraph\graph.py "LangGraph
 
 各 Demo、离线测试和真实 API 运行命令见 `7-experiment/README.md`。项目统一从根目录
 `.env` 读取 `LLM_API_KEY`、`LLM_BASE_URL` 和 `LLM_MODEL_ID`，不在源码或日志中保存密钥。
+
+## 第八章：记忆与检索
+
+第八章实验位于 `8-experiment/`，对应 `hello-agents==0.2.0` 的记忆系统与 RAG。
+配置仍只读取根目录 `.env` 中的 LLM、Qdrant、Neo4j 和 Embedding 项。
+
+快速体验（教程 8.1.4）：带 `MemoryTool` 和 `RAGTool` 的 `SimpleAgent`。
+
+```powershell
+F:\my-hello-agent\.conda\python.exe -m demos.memory_rag_agent_demo
+```
+
+MemoryTool 添加、搜索与摘要示例：
+
+```powershell
+F:\my-hello-agent\.conda\python.exe -m demos.memory_tool_demo
+```
+
+RAGTool 添加文本、搜索与知识库统计示例：
+
+```powershell
+F:\my-hello-agent\.conda\python.exe -m demos.rag_tool_demo
+```
+
+请在 `8-experiment` 目录下执行。说明见 `8-experiment/README.md`。
+
+### PDF 智能文档问答助手
+
+`8-experiment/core/pdf_assistant.py` 把 MemoryTool 与 RAGTool 组合成 PDF 问答助手
+（加载 → 提问 → 笔记 → 回顾 → 报告），`8-experiment/app.py` 提供 Gradio Web 界面。
+
+```powershell
+F:\my-hello-agent\.conda\python.exe .\8-experiment\app.py
+# 浏览器打开 http://127.0.0.1:7860
+```
+
+命令行验证：`F:\my-hello-agent\.conda\python.exe -m demos.pdf_learning_assistant_demo --check`
+（需在 `8-experiment` 目录下执行）。
+
+## 后续方向
+
+教程跟踪暂停在第九章，`10-experiment/` 尚未开工，README 不再预留该小节。
+下一阶段按工程化能力组织，见 [ROADMAP.md](ROADMAP.md)。
+
+已安装的 `hello-agents==0.2.8` 仍带有 `protocols`（MCP / A2A / ANP）、
+`evaluation`（BFCL、GAIA、LLM-as-Judge、win-rate）和 `rl` 模块，
+对应教程第十、十一、十二章的能力。需要时直接作为组件取用即可，
+不再逐章复现教程示例。
