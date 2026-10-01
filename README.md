@@ -7,7 +7,7 @@
 
 **自 2026-09-24 起暂停按 hello-agents 教程逐章推进。** 后续不再按章节组织，
 改为围绕工程化能力推进：把已有 Agent 做成可上线的服务，补齐可观测性、自动化评测与部署，
-再做纵深专题和作品集。计划见 [ROADMAP.md](ROADMAP.md)。
+再做纵深专题和作品集。
 
 各实验目录仍保留教程章节编号与来源说明，便于回溯；README 不再预留尚未开工的章节小节。
 
@@ -26,6 +26,8 @@
 - `1.3-experiment/session_agent.py`: 多轮会话状态、显式接受/拒绝反馈，以及连续拒绝 3 次后的策略反思。
 - `1.3-experiment/data/memories.jsonl`: 手工写入的用户偏好记忆（JSONL，一行一条记录）。
 - `1.3-experiment/test_memory_v0.py`: 3 个离线记忆读取用例。
+- `FASTAPI_Experiment/app.py`: 将上述旅行 Agent 暴露为 FastAPI 会话服务，当前使用内存会话。
+- `FASTAPI_Experiment/test_app.py`: 使用 StubLLM 验证 HTTP 路由、请求校验和会话状态接线。
 
 ## 运行检查
 
@@ -66,6 +68,29 @@ python .\1.3-experiment\agent.py
 ```
 
 主循环会读取模型的 `Action`，执行 `available_tools` 中对应的函数，并把工具结果反馈给模型，直到模型返回 `Finish[...]`。
+
+## FastAPI 服务实验
+
+FastAPI 实验复用 `1.3-experiment` 的旅行助手，将 Agent 逻辑放在服务层之后：
+
+```text
+客户端 → FastAPI → AgentService → SessionState → 大模型与旅行工具
+```
+
+启动服务并打开自动文档：
+
+```powershell
+& ".\.conda\python.exe" -m uvicorn app:app --app-dir ".\FASTAPI_Experiment" --reload
+# 浏览器访问 http://127.0.0.1:8000/docs
+```
+
+运行离线 HTTP 测试：
+
+```powershell
+& ".\.conda\python.exe" -m unittest discover -s ".\FASTAPI_Experiment" -p "test_*.py" -v
+```
+
+当前版本用于理解服务边界，服务重启会清空内存会话；SQLite 持久化、SSE、鉴权和限流属于后续迭代，详细说明见 [`FASTAPI_Experiment/README.md`](FASTAPI_Experiment/README.md)。
 
 ## V0 记忆功能
 
@@ -277,8 +302,8 @@ F:\my-hello-agent\.conda\python.exe .\8-experiment\app.py
 
 ## 后续方向
 
-教程跟踪暂停在第九章，`10-experiment/` 尚未开工，README 不再预留该小节。
-下一阶段按工程化能力组织，见 [ROADMAP.md](ROADMAP.md)。
+教程跟踪暂停在第九章，当前已开始 `FASTAPI_Experiment` 服务化实验。
+后续按工程化能力组织。
 
 已安装的 `hello-agents==0.2.8` 仍带有 `protocols`（MCP / A2A / ANP）、
 `evaluation`（BFCL、GAIA、LLM-as-Judge、win-rate）和 `rl` 模块，

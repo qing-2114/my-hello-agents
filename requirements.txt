@@ -8,6 +8,10 @@ langgraph>=0.2
 langchain-core>=0.3
 langchain-openai>=0.3
 gradio>=6.0
+# FastAPI service experiment
+fastapi>=0.115
+uvicorn>=0.30
+httpx>=0.28
 # PDF 解析：MarkItDown 的 pdf 扩展依赖（pdfminer.six + pdfplumber）
 pdfplumber>=0.11
 # PyTorch CUDA 12.8 wheels for the project's RTX 4050 setup.
