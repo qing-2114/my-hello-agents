@@ -64,6 +64,33 @@ def parse_action(action: str) -> tuple[str, dict[str, object]] | str:
     return expression.func.id, arguments
 
 
+def extract_action(text: str) -> str | None:
+    """Return the Action payload; a Finish[...] answer may span several lines.
+
+    The Finish answer ends at its matching ``]``, so any chatter the model
+    appends after the closing bracket is discarded.
+    """
+    match = re.search(r"^Action:\s*", text, flags=re.MULTILINE)
+    if not match:
+        return None
+    rest = text[match.end():]
+    if not rest:
+        return None
+    if not rest.startswith("Finish["):
+        return rest.splitlines()[0].strip()
+
+    depth = 0
+    for index, char in enumerate(rest):
+        if char == "[":
+            depth += 1
+        elif char == "]":
+            depth -= 1
+            if depth == 0:
+                return rest[: index + 1]
+    # Unbalanced brackets: hand the raw text to parse_action to report.
+    return rest.strip()
+
+
 def _first_thought_action(text: str) -> str:
     """Keep only the first Thought/Action pair from a model response."""
     match = re.search(
@@ -141,8 +168,8 @@ def run_agent(
         print(f"模型输出:\n{llm_output}\n")
         prompt_history.append(llm_output)
 
-        action_match = re.search(r"^Action:\s*(.+)$", llm_output, flags=re.MULTILINE)
-        if not action_match:
+        action_text = extract_action(llm_output)
+        if action_text is None:
             observation = "错误:未能解析到 Action 字段。请严格使用 Thought 和 Action 格式。"
             observation_str = f"Observation: {observation}"
             print(f"{observation_str}\n" + "=" * 40)
@@ -150,7 +177,7 @@ def run_agent(
             continue
 
         try:
-            parsed = parse_action(action_match.group(1).strip())
+            parsed = parse_action(action_text)
         except ValueError as exc:
             observation = f"错误:{exc}"
             observation_str = f"Observation: {observation}"
