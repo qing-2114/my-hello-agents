@@ -1,12 +1,24 @@
 requests>=2.31
 tavily-python>=0.5
 python-dotenv>=1.0
-openai>=1.0
+# hello-agents 0.2.x 要求 openai<2，其他框架需与之兼容
+openai>=1.109.1,<2
 # 第八章 RAG / Memory 需要 0.2.x；0.2.0 遇到模型不可用时可切 0.2.8/0.2.9（见 8-experiment/README.md）
-hello-agents==0.2.8
+hello-agents[protocols]==0.2.8
+# 第十章 A2A：hello-agents 0.2.x 依赖 a2a.client.A2AClient，a2a-sdk 1.x 已移除该类
+a2a-sdk<0.4
+# hello-agents 的 A2AServer 使用 Flask，但包未声明该依赖
+flask>=3.0
+# hello-agents/a2a 需要 fastmcp；fastmcp 2.12 把 mcp 限制在 <1.17，而 AgentScope 2.0.7 需要新版 mcp（streamable_http_client）
+fastmcp>=2.14,<3
+mcp>=1.24
+# serpapi 模块：第四章、hello-agents、camel 使用 google-search-results 的 SerpApiClient/GoogleSearch。
+# 不要安装新版 serpapi 包，它和 google-search-results 共用 serpapi/__init__.py，会互相覆盖
+google-search-results==2.4.2
 langgraph>=0.2
 langchain-core>=0.3
-langchain-openai>=0.3
+# langchain-openai 1.2+ 要求 openai>=2，与 hello-agents 冲突
+langchain-openai>=1.1,<1.2
 gradio>=6.0
 # FastAPI service experiment
 fastapi>=0.115
@@ -21,3 +33,6 @@ torchvision==0.26.0+cu128
 torchaudio==2.11.0+cu128
 transformers==5.16.1
 pillow==12.3.0
+# 多框架共存的版本交集：camel <15.1，langsmith >=15；autogen-core 要求 protobuf~=5.29
+websockets==15.0.1
+protobuf>=5.29.5,<5.30
