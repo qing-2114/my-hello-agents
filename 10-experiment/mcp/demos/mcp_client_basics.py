@@ -17,7 +17,7 @@ from hello_agents.protocols import MCPClient
 
 DEMOS_DIR = Path(__file__).resolve().parent
 # 文件系统服务器只允许访问该目录；教程写的是 "."，这里固定为本实验目录，避免受运行时工作目录影响
-FS_ROOT = str(DEMOS_DIR.parent)
+FS_ROOT = str(DEMOS_DIR.parents[1])
 # 自定义服务器脚本路径；教程的 my_mcp_server.py 未提供，本目录补充了一个最小实现
 CUSTOM_SERVER = str(DEMOS_DIR / "my_mcp_server.py")
 

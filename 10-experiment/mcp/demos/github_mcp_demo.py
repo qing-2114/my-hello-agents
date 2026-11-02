@@ -19,7 +19,7 @@ sys.stderr.reconfigure(encoding="utf-8")
 from dotenv import load_dotenv
 from hello_agents.tools import MCPTool
 
-ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
+ENV_FILE = Path(__file__).resolve().parents[3] / ".env"
 load_dotenv(ENV_FILE)
 
 if not os.getenv("GITHUB_PERSONAL_ACCESS_TOKEN"):

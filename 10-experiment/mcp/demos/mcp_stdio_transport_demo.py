@@ -17,7 +17,7 @@ from hello_agents.tools import MCPTool
 DEMOS_DIR = Path(__file__).resolve().parent
 # 教程写的是相对路径 "my_mcp_server.py" 和 "."，结果依赖运行时工作目录，这里固定为绝对路径
 CUSTOM_SERVER = str(DEMOS_DIR / "my_mcp_server.py")
-FS_ROOT = str(DEMOS_DIR.parent)
+FS_ROOT = str(DEMOS_DIR.parents[1])
 
 
 def custom_server_demo():

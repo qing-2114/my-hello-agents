@@ -11,7 +11,7 @@ from fastmcp import FastMCP
 
 mcp = FastMCP("my-server")
 
-README_PATH = Path(__file__).resolve().parent.parent / "README.md"
+README_PATH = Path(__file__).resolve().parents[2] / "README.md"
 
 
 @mcp.tool()
