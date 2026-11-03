@@ -1,0 +1,7 @@
+.venv/
+.local/
+research-assistant/demos/frontend/node_modules/
+research-assistant/demos/frontend/dist/
+helloagents-deepresearch/frontend/node_modules/
+helloagents-deepresearch/frontend/dist/
+helloagents-deepresearch/backend/notes/
